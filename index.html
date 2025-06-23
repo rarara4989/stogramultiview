@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ストグラMULTIVIEW</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #ffffff;
+      display: flex;
+      height: 100vh;
+    }
+
+    #left {
+      flex: 3;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    #chat-restore {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    h1 {
+      color: #00bcd4;
+      margin-top: 0;
+    }
+
+    .mode-btn {
+      padding: 6px 12px;
+      margin-right: 6px;
+      border: 1px solid #00bcd4;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: transparent;
+      color: #00bcd4;
+    }
+
+    .mode-btn.active {
+      background-color: #00bcd4;
+      color: #1a1a1a;
+      font-weight: bold;
+    }
+
+    input, button {
+      border-radius: 4px;
+      border: none;
+      padding: 6px;
+    }
+
+    #streams-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .stream-block {
+      background: #2c2c2c;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 188, 212, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px;
+    }
+
+    .player {
+      width: 100%;
+      height: 250px;
+      border: none;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin: 8px 0;
+      padding: 0 8px;
+    }
+
+    .fav-btn {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .hide-btn {
+      background-color: #9e9e9e;
+      color: white;
+      cursor: pointer;
+    }
+
+    #right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #333;
+      background: #2f3136;
+    }
+
+    #chat-toggle {
+      background-color: #7289da;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    #chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    #chat-box div {
+      margin-bottom: 10px;
+      color: #dcddde;
+    }
+
+    #chat-input {
+      display: flex;
+      padding: 10px;
+      background: #40444b;
+    }
+
+    #chat-input input {
+      margin-right: 6px;
+      border: none;
+      padding: 6px;
+    }
+
+    #name {
+      width: 100px;
+    }
+
+    #message {
+      flex: 1;
+    }
+
+    #send-btn {
+      background: #7289da;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .fav-list h3 {
+      margin-top: 20px;
+      color: #00bcd4;
+    }
+
+    .fav-list ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .fav-list li {
+      margin-bottom: 6px;
+    }
+
+  
+    .title-glow {
+      font-size: 48px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 4px;
+      background: linear-gradient(90deg, #00bcd4, #7c4dff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px #00bcd4, 0 0 20px #7c4dff, 0 0 30px rgba(0, 188, 212, 0.5);
+    }
+    
+@media (max-width: 768px) {
+  #left {
+    padding: 10px;
+  }
+
+  #streams-container {
+    grid-template-columns: 1fr;
+  }
+
+  .stream-block {
+    margin-bottom: 16px;
+  }
+
+  #right {
+    flex: none;
+    width: 100%;
+    height: 300px;
+    position: fixed;
+    bottom: 0;
+    z-index: 100;
+    border-left: none;
+    border-top: 1px solid #333;
+  }
+
+  #chat-toggle {
+    width: 100%;
+  }
+
+  #chat-box {
+    height: 200px;
+    overflow-y: auto;
+  }
+
+  #chat-input {
+    flex-direction: column;
+  }
+
+  #chat-input input, #send-btn {
+    width: 100%;
+    margin-bottom: 6px;
+  }
+
+  h1, .title-glow {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  #chat-restore {
+    top: auto;
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div id="left">
+    <button id="chat-restore" onclick="toggleChat()">📨 チャット欄を表示する</button>
+    
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <img src="logo.png" alt="ストグラ MULTIVIEW Logo" style="height: 64px;">
+      <h1 class="title-glow" style="margin: 0;">ストグラ MULTIVIEW</h1>
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+      <input id="fav-url" type="text" placeholder="TwitchのURLを入力" style="width: 300px;">
+      <button onclick="addFavorite()">お気に入り登録</button>
+    </div>
+    <div style="margin-bottom: 10px;">
+      探索モード:
+      <button class="mode-btn" onclick="window.setSearchMode('fast')" id="mode-fast">🔎 高速</button>
+      <button class="mode-btn" onclick="window.setSearchMode('deep')" id="mode-deep">🔍 じっくり</button>
+      <button class="mode-btn" onclick="window.setSearchMode('superdeep')" id="mode-superdeep">🧠 超じっくり</button>
+    </div>
+
+    <div id="streams-container">読み込み中...</div>
+
+    <div class="fav-list">
+      <h3 id="favorites-title">お気に入り一覧</h3>
+      <ul id="favorites-list"></ul>
+    </div>
+    <div class="fav-list">
+      <h3>非表示一覧</h3>
+      <ul id="hidden-list"></ul>
+    </div>
+  </div>
+
+  <div id="right">
+    <button id="chat-toggle" onclick="toggleChat()">チャット欄を非表示にする</button>
+    <div id="chat-box">読み込み中...</div>
+    <div id="chat-input">
+      <input type="text" id="name" placeholder="名前" />
+      <input type="text" id="message" placeholder="メッセージを入力" />
+      <button id="send-btn">送信</button>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+  <script type="module" src="./chat.js"></script>
+  <script>
+    function toggleChat() {
+      const right = document.getElementById('right');
+      const restore = document.getElementById('chat-restore');
+      if (right.style.display === 'none') {
+        right.style.display = 'flex';
+        restore.style.display = 'none';
+      } else {
+        right.style.display = 'none';
+        restore.style.display = 'inline-block';
+      }
+    }
+  </script>
+</body>
+</html>
