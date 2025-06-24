@@ -207,6 +207,22 @@ async function fetchStograStreams(token, limit = 500) {
     if (!cursor || streams.length >= limit) break;
   }
 
+  
+  for (const fav of favs) {
+    if (!streams.find(s => s.user_login.toLowerCase() === fav.id.toLowerCase())) {
+      const res = await fetch(`https://api.twitch.tv/helix/streams?user_login=${fav.id}`, {
+        headers: {
+          'Client-ID': CLIENT_ID,
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (data.data?.length) {
+        streams.push(data.data[0]);
+      }
+    }
+  }
+
   return streams;
 }
 
