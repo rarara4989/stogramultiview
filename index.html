@@ -246,9 +246,52 @@
   }
 }
 
+
+.viewing-mode #left > *:not(#streams-container) {
+  display: none !important;
+}
+
+.viewing-mode #streams-container {
+  margin-top: 0;
+}
+
+#viewing-toggle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: red;
+  color: white;
+  font-weight: bold;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.viewing-mode .stream-block {
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  border: 1px solid #333;
+}
+
+.viewing-mode .info {
+  display: none !important;
+}
+
+.viewing-mode .player {
+  height: calc(100vh / 3) !important;
+}
+
 </style>
 </head>
 <body>
+
+<div id="live-notification" style="position: fixed; top: 20px; right: 20px; background: #00bcd4; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; display: none; z-index: 9999;"></div>
+
+  <button id="viewing-toggle" onclick="toggleViewingMode()" title="クリックすると画面を簡易表示（視聴に特化）に切り替えます">👁️ 視聴モード</button>
   <div id="left">
     <button id="chat-restore" onclick="toggleChat()">📨 チャット欄を表示する</button>
     
@@ -257,17 +300,19 @@
       <h1 class="title-glow" style="margin: 0;">ストグラ MULTIVIEW</h1>
     </div>
     
-    <div style="margin-bottom: 10px;">
-      <input id="fav-url" type="text" placeholder="TwitchのURLを入力" style="width: 300px;">
-      <button onclick="addFavorite()">お気に入り登録</button>
-    </div>
-    <div style="margin-bottom: 10px;">
-      探索モード:
-      <button class="mode-btn" onclick="window.setSearchMode('fast')" id="mode-fast">🔎 高速</button>
-      <button class="mode-btn" onclick="window.setSearchMode('deep')" id="mode-deep">🔍 じっくり</button>
-      <button class="mode-btn" onclick="window.setSearchMode('superdeep')" id="mode-superdeep">🧠 超じっくり</button>
-    </div>
+    <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <div>
+        <input id="fav-url" type="text" placeholder="TwitchのURLを入力" style="width: 300px;">
+        <button onclick="addFavorite()">お気に入り登録</button>
 
+      </div>
+      <div>
+        探索モード:
+        <button class="mode-btn" onclick="window.setSearchMode('fast')" id="mode-fast">🔎 高速</button>
+        <button class="mode-btn" onclick="window.setSearchMode('deep')" id="mode-deep">🔍 じっくり</button>
+        <button class="mode-btn" onclick="window.setSearchMode('superdeep')" id="mode-superdeep">🧠 超じっくり</button>
+      </div>
+    </div>
     <div id="streams-container">読み込み中...</div>
 
     <div class="fav-list">
@@ -305,5 +350,80 @@
       }
     }
   </script>
+
+  <script>
+    function toggleViewingMode() {
+      const body = document.body;
+      const btn = document.getElementById('viewing-toggle');
+      const on = body.classList.toggle('viewing-mode');
+      btn.textContent = on ? '👁️ 通常モード' : '👁️ 視聴モード';
+    }
+  </script>
+
+<script>
+const notifiedFavorites = new Set();
+
+async function checkFavoriteLives() {
+  const favs = JSON.parse(localStorage.getItem("favoritesList") || "[]");
+  if (favs.length === 0) return;
+
+  const token = await getTwitchAccessToken();
+  const logins = favs.map(f => `user_login=${encodeURIComponent(f.id)}`).join("&");
+  const res = await fetch(`https://api.twitch.tv/helix/streams?${logins}`, {
+    headers: {
+      'Client-ID': CLIENT_ID,
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  const data = await res.json();
+  const lives = data.data || [];
+
+  lives.forEach(stream => {
+    const login = stream.user_login.toLowerCase();
+    if (!notifiedFavorites.has(login)) {
+      showLiveNotification(`${stream.user_name} さんが配信を開始しました！`);
+      notifiedFavorites.add(login);
+    }
+  });
+}
+
+function showLiveNotification(text) {
+  const div = document.getElementById("live-notification");
+  div.textContent = text;
+  div.style.display = "block";
+  setTimeout(() => {
+    div.style.display = "none";
+  }, 8000);
+}
+
+setInterval(checkFavoriteLives, 60000); // 1分ごとにチェック
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(checkFavoriteLives, 3000); // 初回遅延チェック
+});
+</script>
+
+
+<script>
+function updateStartedTimes() {
+  document.querySelectorAll('.started-time').forEach(el => {
+    const startedAt = el.getAttribute('data-started');
+    if (!startedAt) return;
+    const startTime = new Date(startedAt);
+    const now = new Date();
+    const diffMin = Math.floor((now - startTime) / 60000);
+    if (diffMin >= 60) {
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      el.textContent = `${h}時間${m}分前`;
+    } else {
+      el.textContent = `${diffMin}分前`;
+    }
+  });
+}
+setInterval(updateStartedTimes, 60000);
+window.addEventListener("DOMContentLoaded", updateStartedTimes);
+</script>
+
 </body>
+
 </html>

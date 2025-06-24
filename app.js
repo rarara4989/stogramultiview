@@ -260,15 +260,20 @@ async function renderStreams() {
     const star = isFav ? '★' : '☆';
     const block = document.createElement("div");
     block.className = "stream-block";
-    block.innerHTML = `
-      <div class="info">
-        <button class="fav-btn" onclick="addFavoriteById('${stream.user_login}', '${stream.user_name}')">${star}</button>
-        <span>${stream.user_name}</span>
-        <span>${stream.viewer_count}人</span>
-        <button class="hide-btn" onclick="addToHidden('${stream.user_login}', '${stream.user_name}')">非表示</button>
-      </div>
-      <iframe class="player" src="https://player.twitch.tv/?channel=${stream.user_login}&parent=${parentHost}&muted=true" allowfullscreen></iframe>
-    `;
+    
+const startedAt = stream.started_at;
+const startedHTML = startedAt ? `（<span class="started-time" data-started="${startedAt}">--分前</span>）` : '';
+
+block.innerHTML = `
+  <div class="info">
+    <button class="fav-btn" onclick="addFavoriteById('${stream.user_login}', '${stream.user_name}')">${star}</button>
+    <span>${stream.user_name}</span>
+    <span>${stream.viewer_count}人${startedHTML}</span>
+    <button class="hide-btn" onclick="addToHidden('${stream.user_login}', '${stream.user_name}')">非表示</button>
+  </div>
+  <iframe class="player" title="配信を視聴中（クリックでプレイヤーにフォーカス）" src="https://player.twitch.tv/?channel=${stream.user_login}&parent=${parentHost}&muted=true" allowfullscreen></iframe>
+`;
+
     container.appendChild(block);
   });
 }
