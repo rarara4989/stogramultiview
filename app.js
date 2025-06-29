@@ -199,9 +199,10 @@ async function fetchStograStreams(token, limit = 500) {
     const filtered = batch.filter(s => {
       const login = s.user_login.toLowerCase();
       const isFav = favSet.has(login);
-      const includeWord = document.getElementById('include-word')?.value || 'ストグラ';
-const excludeWord = document.getElementById('exclude-word')?.value || 'コラボ';
-const isStogra = s.title.includes(includeWord) && !s.title.includes(excludeWord);
+      const includeWord = document.getElementById('include-word')?.value.trim() || 'ストグラ';
+const excludeWord = document.getElementById('exclude-word')?.value.trim() || '';
+const isStogra = s.title.toLowerCase().includes(includeWord.toLowerCase()) &&
+  (!excludeWord || !s.title.toLowerCase().includes(excludeWord.toLowerCase()));
       return isFav || isStogra;
     });
 
@@ -291,5 +292,19 @@ renderStreams();
 
 
 window.handleReload = function () {
+  const include = document.getElementById('include-word')?.value || '';
+  const exclude = document.getElementById('exclude-word')?.value || '';
+  localStorage.setItem('includeWord', include);
+  localStorage.setItem('excludeWord', exclude);
+
   renderStreams();
 };
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  const includeSaved = localStorage.getItem('includeWord');
+  document.getElementById('include-word').value = includeSaved !== null ? includeSaved : 'ストグラ';
+
+  const excludeSaved = localStorage.getItem('excludeWord');
+  document.getElementById('exclude-word').value = excludeSaved !== null ? excludeSaved : 'コラボ';
+});
