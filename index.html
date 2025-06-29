@@ -2,16 +2,16 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ストグラ配信一覧 - MULTIVIEW</title>
-  <meta name="description" content="ストグラ配信者のライブ映像を一覧で同時視聴！お気に入り機能やチャットも搭載したストグラファン向けWebアプリ。">
+  <title>推し配信ウォッチャー - MULTIVIEW</title>
+  <meta name="description" content="推し配信者のライブ映像を一覧で同時視聴！お気に入り機能やチャットも搭載した配信ウォッチャー向けWebアプリ。">
   <meta name="google-site-verification" content="wmFCCCFRCZiC1Lb4AyY77n0zH89povDOm0BsUOxGgEk" />
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #1a1a1a;
-      color: #ffffff;
+      background: #ffeef8;
+      color: #333333;
       display: flex;
       height: 100vh;
     }
@@ -115,11 +115,11 @@
       display: flex;
       flex-direction: column;
       border-left: 1px solid #333;
-      background: #2f3136;
+      background: #fff0f5;
     }
 
     #chat-toggle {
-      background-color: #7289da;
+      background-color: #ff4081;
       color: white;
       font-weight: bold;
       border: none;
@@ -136,13 +136,13 @@
 
     #chat-box div {
       margin-bottom: 10px;
-      color: #dcddde;
+      color: #333333;
     }
 
     #chat-input {
       display: flex;
       padding: 10px;
-      background: #40444b;
+      background: #ffd6e8;
     }
 
     #chat-input input {
@@ -160,7 +160,7 @@
     }
 
     #send-btn {
-      background: #7289da;
+      background: #ff4081;
       color: white;
       border: none;
       cursor: pointer;
@@ -186,10 +186,10 @@
       font-weight: 900;
       text-align: center;
       letter-spacing: 4px;
-      background: linear-gradient(90deg, #00bcd4, #7c4dff);
+      background: linear-gradient(90deg, #ff4081, #ff80ab);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 10px #00bcd4, 0 0 20px #7c4dff, 0 0 30px rgba(0, 188, 212, 0.5);
+      
     }
     
 @media (max-width: 768px) {
@@ -295,9 +295,9 @@
   <div id="left">
     <button id="chat-restore" onclick="toggleChat()">📨 チャット欄を表示する</button>
     
-    <div style="display: flex; align-items: center; gap: 16px;">
-      <img src="logo.png" alt="ストグラ MULTIVIEW Logo" style="height: 64px;">
-      <h1 class="title-glow" style="margin: 0;">ストグラ MULTIVIEW</h1>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px;">
+      <img src="logo_icon_only.png" alt="推し配信ウォッチャー ロゴ" style="height: 64px;">
+      <h1 class="title-glow" style="margin: 0;">推し配信ウォッチャー</h1>
     </div>
     
     <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
@@ -307,7 +307,11 @@
 
       </div>
       <div>
-        探索モード:
+        
+    🔍 <label>検索キーワード: <input id="include-word" type="text" value="ストグラ" /></label>
+    🚫 <label>除外キーワード: <input id="exclude-word" type="text" value="コラボ" /></label>
+    🔄 <button onclick="handleReload()">検索</button><br>探索モード:
+    
         <button class="mode-btn" onclick="window.setSearchMode('fast')" id="mode-fast">🔎 高速</button>
         <button class="mode-btn" onclick="window.setSearchMode('deep')" id="mode-deep">🔍 じっくり</button>
         <button class="mode-btn" onclick="window.setSearchMode('superdeep')" id="mode-superdeep">🧠 超じっくり</button>

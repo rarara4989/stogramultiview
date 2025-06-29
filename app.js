@@ -199,7 +199,9 @@ async function fetchStograStreams(token, limit = 500) {
     const filtered = batch.filter(s => {
       const login = s.user_login.toLowerCase();
       const isFav = favSet.has(login);
-      const isStogra = s.title.includes('ストグラ') && !s.title.includes('コラボ');
+      const includeWord = document.getElementById('include-word')?.value || 'ストグラ';
+const excludeWord = document.getElementById('exclude-word')?.value || 'コラボ';
+const isStogra = s.title.includes(includeWord) && !s.title.includes(excludeWord);
       return isFav || isStogra;
     });
 
@@ -282,3 +284,10 @@ updateModeButtons();
 updateFavoritesList();
 updateHiddenList();
 renderStreams();
+
+
+window.handleReload = function () {
+  updateFavoritesList();  // お気に入りの状態を更新
+  updateHiddenList();     // 非表示一覧を更新
+  renderStreams();        // 配信一覧を更新
+}
