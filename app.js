@@ -255,6 +255,10 @@ async function renderStreams() {
 
   const top = ordered.slice(0, 9);
   container.innerHTML = "";
+  if (top.length === 0) {
+    container.innerHTML = "🔍 条件に一致する配信は見つかりませんでした。";
+    return;
+  }
   const parentHost = location.hostname || "localhost";
 
   top.forEach(stream => {
@@ -284,3 +288,8 @@ updateModeButtons();
 updateFavoritesList();
 updateHiddenList();
 renderStreams();
+
+
+window.handleReload = function () {
+  renderStreams();
+};

@@ -285,6 +285,20 @@
   height: calc(100vh / 3) !important;
 }
 
+
+button {
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+button:active {
+  transform: scale(0.97);
+  filter: brightness(0.9);
+}
+
 </style>
 </head>
 <body>
