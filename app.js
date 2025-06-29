@@ -284,10 +284,3 @@ updateModeButtons();
 updateFavoritesList();
 updateHiddenList();
 renderStreams();
-
-
-window.handleReload = function () {
-  updateFavoritesList();  // お気に入りの状態を更新
-  updateHiddenList();     // 非表示一覧を更新
-  renderStreams();        // 配信一覧を更新
-}
